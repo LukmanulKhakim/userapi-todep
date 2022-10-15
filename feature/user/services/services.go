@@ -3,9 +3,11 @@ package services
 import (
 	"errors"
 	"strings"
+	"userapi/config"
 	"userapi/feature/user/domain"
 
 	"github.com/labstack/gommon/log"
+	"gorm.io/gorm"
 )
 
 type repoService struct {
@@ -24,7 +26,7 @@ func (rs *repoService) AddUser(newUser domain.Core) (domain.Core, error) {
 	if err != nil {
 		log.Error(err.Error())
 		if strings.Contains(err.Error(), "duplicate") {
-			return domain.Core{}, errors.New("rejected from database")
+			return domain.Core{}, errors.New(config.DUPLICATED_DATA)
 		}
 		return domain.Core{}, errors.New("some problem on database")
 	}
@@ -34,17 +36,18 @@ func (rs *repoService) AddUser(newUser domain.Core) (domain.Core, error) {
 // ShowAllUser implements domain.Service
 func (rs *repoService) ShowAllUser() ([]domain.Core, error) {
 	res, err := rs.qry.GetAll()
-	if err != nil {
+
+	if err == gorm.ErrRecordNotFound {
 		log.Error(err.Error())
-		if strings.Contains(err.Error(), "table") {
-			return nil, errors.New("database error")
-		} else if strings.Contains(err.Error(), "found") {
-			return nil, errors.New("no data")
-		}
+		return nil, gorm.ErrRecordNotFound
+	} else if err != nil {
+		log.Error(err.Error())
+		return nil, errors.New(config.DATABASE_ERROR)
 	}
+
 	if len(res) == 0 {
 		log.Info("no data")
-		return nil, errors.New("no data")
+		return nil, errors.New(config.DATA_NOTFOUND)
 	}
 	return res, nil
 }
@@ -54,10 +57,10 @@ func (rs *repoService) Profile(ID uint) (domain.Core, error) {
 	res, err := rs.qry.Get(ID)
 	if err != nil {
 		log.Error(err.Error())
-		if strings.Contains(err.Error(), "table") {
-			return domain.Core{}, errors.New("database error")
-		} else if strings.Contains(err.Error(), "found") {
-			return domain.Core{}, errors.New("no data")
+		if err == gorm.ErrRecordNotFound {
+			return domain.Core{}, gorm.ErrRecordNotFound
+		} else {
+			return domain.Core{}, errors.New(config.DATABASE_ERROR)
 		}
 	}
 	return res, nil
@@ -67,8 +70,11 @@ func (rs *repoService) Profile(ID uint) (domain.Core, error) {
 func (rs *repoService) UpdateProfile(updatedData domain.Core, ID uint) (domain.Core, error) {
 	res, err := rs.qry.Update(updatedData, ID)
 	if err != nil {
-		if strings.Contains(err.Error(), "column") {
-			return domain.Core{}, errors.New("rejected from database")
+		log.Error(err.Error())
+		if err == gorm.ErrRecordNotFound {
+			return domain.Core{}, gorm.ErrRecordNotFound
+		} else {
+			return domain.Core{}, errors.New(config.DATABASE_ERROR)
 		}
 	}
 	return res, nil
@@ -79,8 +85,10 @@ func (rs *repoService) DeleteUser(ID uint) (domain.Core, error) {
 	res, err := rs.qry.Delete(ID)
 	if err != nil {
 		log.Error(err.Error())
-		if strings.Contains(err.Error(), "column") {
-			return domain.Core{}, errors.New("rejected from database")
+		if err == gorm.ErrRecordNotFound {
+			return domain.Core{}, gorm.ErrRecordNotFound
+		} else {
+			return domain.Core{}, errors.New(config.DATABASE_ERROR)
 		}
 	}
 	return res, nil
