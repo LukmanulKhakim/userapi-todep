@@ -36,7 +36,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-          
               docker stop projectuserapi
               docker rm projectuserapi
               docker rmi lukman31/userapi-todep
