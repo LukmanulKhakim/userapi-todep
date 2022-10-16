@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: lukman31/userapi-todept:latest
+          tags: lukman31/deploy:latest
       - 
         name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
@@ -36,8 +36,10 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
- 
-              docker run --name projectuserapi --link mysqlbe12 -d -p 8000:8000 lukman31/userapi-todep
+              docker stop projectuser
+              docker rm projectuser
+              docker rmi lukman31/deploy
+              docker run --name projectuser --link mysqlbe12 -d -p 8000:8000 lukman31/deploy
 
 
 
