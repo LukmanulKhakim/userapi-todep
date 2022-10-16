@@ -36,9 +36,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-              docker stop projectuserapi
-              docker rm projectuserapi
-              docker rmi lukman31/userapi-todep
+ 
               docker run --name projectuserapi --link mysqlbe12 -d -p 8000:8000 lukman31/userapi-todep
 
 
