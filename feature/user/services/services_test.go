@@ -126,7 +126,7 @@ func TestUpdateProfil(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
 		assert.Equal(t, input.Name, res.Name, "Nama input dan hasil harus sama")
-		assert.Equal(t, uint(1), res.ID, "nilai id harus sama dengan nilai input")
+		assert.Equal(t, id, res.ID, "nilai id harus sama dengan nilai input")
 		repo.AssertExpectations(t)
 	})
 
@@ -139,7 +139,7 @@ func TestUpdateProfil(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Empty(t, res)
 		assert.EqualError(t, err, gorm.ErrRecordNotFound.Error(), "pesan error tidak sesuai")
-		assert.NotEqual(t, uint(1), res.ID, "harusnya tidak sama dengan nilai id")
+		assert.NotEqual(t, id, res.ID, "harusnya tidak sama dengan nilai id")
 		repo.AssertExpectations(t)
 	})
 
@@ -152,23 +152,41 @@ func TestUpdateProfil(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Empty(t, res)
 		assert.EqualError(t, err, config.DATABASE_ERROR, "pesan error tidak sesuai")
-		assert.NotEqual(t, uint(1), res.ID, "harusnya tidak sama dengan nilai id")
+		assert.NotEqual(t, id, res.ID, "harusnya tidak sama dengan nilai id")
 		repo.AssertExpectations(t)
 	})
 }
 
-// func TestDeleteUser(t *testing.T) {
-// 	repo := mocks.NewRepository(t)
-// 	t.Run("Sucses delete profil", func(t *testing.T) {
-// 		repo.On("Delete", mock.Anything).Return(domain.Core{}, nil).Once()
-// 		srv := New(repo)
-// 		var id = uint(1)
-// 		res, err := srv.DeleteUser(id)
-// 		assert.Nil(t, err)
-// 		assert.Nil(t, res)
-// 		assert.Equal(t, input.Name, res.Name, "Nama input dan hasil harus sama")
-// 		assert.Equal(t, uint(1), res.ID, "nilai id harus sama dengan nilai input")
-// 		repo.AssertExpectations(t)
-// 	})
+func TestDeleteUser(t *testing.T) {
+	repo := mocks.NewRepository(t)
+	t.Run("Sucses delete profil", func(t *testing.T) {
+		repo.On("Delete", mock.Anything).Return(domain.Core{}, nil).Once()
+		srv := New(repo)
+		var id = uint(1)
+		_, err := srv.DeleteUser(id)
+		assert.Nil(t, err)
+		//assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
 
-// }
+	t.Run("Data no found", func(t *testing.T) {
+		repo.On("Delete", mock.Anything).Return(domain.Core{}, gorm.ErrRecordNotFound).Once()
+		srv := New(repo)
+		var id = uint(1)
+		_, err := srv.DeleteUser(id)
+		assert.NotNil(t, err)
+		assert.EqualError(t, err, gorm.ErrRecordNotFound.Error(), "pesan error tidak sesuai")
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("error data on database", func(t *testing.T) {
+		repo.On("Delete", mock.Anything).Return(domain.Core{}, errors.New(config.DATABASE_ERROR)).Once()
+		srv := New(repo)
+		var id = uint(1)
+		_, err := srv.DeleteUser(id)
+		assert.NotNil(t, err)
+		assert.EqualError(t, err, config.DATABASE_ERROR, "pesan error tidak sesuai")
+		repo.AssertExpectations(t)
+	})
+
+}

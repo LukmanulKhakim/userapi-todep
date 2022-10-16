@@ -86,10 +86,10 @@ func (rs *repoService) DeleteUser(ID uint) (domain.Core, error) {
 	if err != nil {
 		log.Error(err.Error())
 		if err == gorm.ErrRecordNotFound {
-			return domain.Core{}, gorm.ErrRecordNotFound
+			return res, gorm.ErrRecordNotFound
 		} else {
-			return domain.Core{}, errors.New(config.DATABASE_ERROR)
+			return res, errors.New(config.DATABASE_ERROR)
 		}
 	}
-	return res, nil
+	return domain.Core{}, nil
 }
