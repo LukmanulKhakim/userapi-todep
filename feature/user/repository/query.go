@@ -65,7 +65,6 @@ func (rq *repoQuery) Update(updatedData domain.Core, ID uint) (domain.Core, erro
 	return ToDomain(res), nil
 }
 
-// Delete implements domain.Repository
 func (rq *repoQuery) Delete(ID uint) (domain.Core, error) {
 	var res User
 	if err := rq.db.First(&res, "id=?", ID).Error; err != nil {
