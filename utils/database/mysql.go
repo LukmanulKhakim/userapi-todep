@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"userapi/config"
 	rUser "userapi/feature/user/repository"
 
@@ -11,7 +10,7 @@ import (
 )
 
 func InitDB(cfg *config.AppConfig) *gorm.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=utf8mb4&parseTime=True", cfg.Username, cfg.Password, cfg.Address, cfg.Name)
+	dsn := "root:@tcp(mysqlbe12:3306)/userapi_db?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
