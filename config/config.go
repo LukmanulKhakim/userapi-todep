@@ -2,7 +2,7 @@ package config
 
 import (
 	"os"
-	"strconv"
+
 	"sync"
 
 	"github.com/labstack/gommon/log"
@@ -50,12 +50,12 @@ func initConfig() *AppConfig {
 	defaultConfig.Password = os.Getenv("Password")
 	defaultConfig.Address = os.Getenv("Address")
 
-	cnv, err := strconv.Atoi(os.Getenv("Port"))
-	if err != nil {
-		log.Fatal("Cannot parse DB Port variable")
-		return nil
-	}
-	defaultConfig.Port = cnv
+	// cnv, err := strconv.Atoi(os.Getenv("Port"))
+	// if err != nil {
+	// 	log.Fatal("Cannot parse DB Port variable")
+	// 	return nil
+	// }
+	// defaultConfig.Port = cnv
 
 	return &defaultConfig
 	// app.DBUser = os.Getenv("DB_USER")
