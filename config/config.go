@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/labstack/gommon/log"
 )
@@ -26,6 +27,9 @@ func NewConfig() *AppConfig {
 	return cfg
 }
 
+var lock = &sync.Mutex{}
+var appConfig *AppConfig
+
 func initConfig() *AppConfig {
 	var defaultConfig AppConfig
 
@@ -34,19 +38,19 @@ func initConfig() *AppConfig {
 	// 	log.Error("config error :", err.Error())
 	// 	return nil
 	// }
-	//SECRET := os.Getenv("SECRET")
-	cnv, err := strconv.Atoi(os.Getenv("SERVERPORT"))
-	if err != nil {
-		log.Fatal("Cannot parse port variable")
-		return nil
-	}
-	//SERVERPORT := int16(cnv)
+	// SECRET = os.Getenv("SECRET")
+	// cnv, err := strconv.Atoi(os.Getenv("SERVERPORT"))
+	// if err != nil {
+	// 	log.Fatal("Cannot parse port variable")
+	// 	return nil
+	// }
+	// SERVERPORT = int16(cnv)
 	defaultConfig.Name = os.Getenv("Name")
 	defaultConfig.Username = os.Getenv("Username")
 	defaultConfig.Password = os.Getenv("Password")
 	defaultConfig.Address = os.Getenv("Address")
 
-	cnv, err = strconv.Atoi(os.Getenv("Port"))
+	cnv, err := strconv.Atoi(os.Getenv("Port"))
 	if err != nil {
 		log.Fatal("Cannot parse DB Port variable")
 		return nil
